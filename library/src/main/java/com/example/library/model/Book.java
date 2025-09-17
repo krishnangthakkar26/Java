@@ -18,6 +18,10 @@ public class Book {
     @JoinColumn(name = "borrowed_by_id")
     private User borrowedBy;
 
+    // NEW FIELD for book image path
+    @Column(name = "image_path")
+    private String imagePath;
+
     public Book() {}
 
     public Book(String title, String author, String isbn, int noOfCopies) {
@@ -44,4 +48,7 @@ public class Book {
 
     public User getBorrowedBy() { return borrowedBy; }
     public void setBorrowedBy(User borrowedBy) { this.borrowedBy = borrowedBy; }
+
+    public String getImagePath() { return imagePath; }
+    public void setImagePath(String imagePath) { this.imagePath = imagePath; }
 }
