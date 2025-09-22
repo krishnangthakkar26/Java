@@ -89,14 +89,52 @@ public class BookService {
     }
 
     // Update book details (admin)
-    public boolean updateBook(Long bookId, String title, String author, String isbn, Integer copies) {
+//    public boolean updateBook(Long bookId, String title, String author, String isbn, Integer copies) {
+//        return bookRepository.findById(bookId).map(book -> {
+//            if (title != null && !title.isEmpty()) book.setTitle(title);
+//            if (author != null && !author.isEmpty()) book.setAuthor(author);
+//            if (isbn != null && !isbn.isEmpty()) book.setIsbn(isbn);
+//            if (copies != null && copies >= 0) book.setNoOfCopies(copies);
+//            bookRepository.save(book);
+//            return true;
+//        }).orElse(false);
+//    }
+
+    public boolean updateBook(Long bookId, String title, String author, String isbn, Integer copies, String imagePath) {
         return bookRepository.findById(bookId).map(book -> {
             if (title != null && !title.isEmpty()) book.setTitle(title);
             if (author != null && !author.isEmpty()) book.setAuthor(author);
             if (isbn != null && !isbn.isEmpty()) book.setIsbn(isbn);
             if (copies != null && copies >= 0) book.setNoOfCopies(copies);
+            if (imagePath != null && !imagePath.isEmpty()) book.setImagePath(imagePath); // ✅ update only if new file is uploaded
             bookRepository.save(book);
             return true;
         }).orElse(false);
     }
+
+
+    // Update only the image path of a book
+    public boolean updateBookImage(Long bookId, String imagePath) {
+        return bookRepository.findById(bookId).map(book -> {
+            book.setImagePath(imagePath);
+            bookRepository.save(book);
+            return true;
+        }).orElse(false);
+    }
+
+    // Add book with optional image path
+    public void addBookWithImage(String title, String author, String isbn, int copies, String imagePath) {
+        bookRepository.findByIsbn(isbn).ifPresentOrElse(existingBook -> {
+            existingBook.setNoOfCopies(existingBook.getNoOfCopies() + copies);
+            if (imagePath != null) {
+                existingBook.setImagePath(imagePath); // update image if provided
+            }
+            bookRepository.save(existingBook);
+        }, () -> {
+            Book newBook = new Book(title, author, isbn, copies);
+            newBook.setImagePath(imagePath);
+            bookRepository.save(newBook);
+        });
+    }
+
 }
